@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android APK (Debug)
 
 on:
   workflow_dispatch:
@@ -6,30 +6,34 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Java
+      - name: Set up Java (JDK 11)
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: "17"
+          java-version: "11"
 
-      - name: Set up Flutter
+      - name: Set up Flutter (Pinned)
         uses: subosito/flutter-action@v2
         with:
-          channel: "stable"
+          flutter-version: "3.16.9"
           cache: true
+
+      - name: Flutter doctor
+        run: flutter doctor -v
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build APK (release)
-        run: flutter build apk --release
+      - name: Build APK (debug)
+        run: flutter build apk --debug -v
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: esharty-apk
-          path: build/app/outputs/flutter-apk/*.apk
+          name: esharty-apk-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
